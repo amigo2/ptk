@@ -6,7 +6,7 @@ from django.test import TestCase
 from codes_api.utils import calculate_distance
 
 
-
+# test outcodes api view
 class OutcodesTest(APITestCase):
 
     def test_outcodes(self):
@@ -16,6 +16,7 @@ class OutcodesTest(APITestCase):
         self.assertEqual(response.status_code, 200)
 
 
+ # test nexus api view function
 class NexusTest(APITestCase):
 
     def test_nexus(self):
@@ -26,9 +27,10 @@ class NexusTest(APITestCase):
         assert response.status_code == 200
         
 
+# test to calculate distance function
 class CalculateDistanceTest(TestCase):
 
-    # clacu;ate distance betwen Lyon and Paris
+    # claculate distance betwen Lyon and Paris
     def test_calculate_distance(self):
         self.assertEqual(calculate_distance(45.7597,4.8422,48.8567,2.3508),392.2172595594006)
 
