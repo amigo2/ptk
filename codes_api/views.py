@@ -4,6 +4,7 @@ import requests
 from django.shortcuts import render
 from rest_framework import viewsets
 from django.http import HttpResponse
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 
@@ -64,51 +65,54 @@ class OutcodesView(APIView):
     """
 
     def get(self, request, post_code):
+        
+        try:
 
-        df = load_file_to_pandas('listings.csv')                
+            df = load_file_to_pandas('listings.csv')                
 
-        url = 'http://api.postcodes.io/outcodes/'+ post_code
-        r = requests.get(url)
-
-
-        postcodes = r.json()
-
-        ward = postcodes['result']['admin_ward']
+            url = 'http://api.postcodes.io/outcodes/'+ post_code
+            r = requests.get(url)
 
 
-        count_list = []
-        location_list = []
-        price_list = []
+            postcodes = r.json()
+
+            ward = postcodes['result']['admin_ward']
+
+
+            count_list = []
+            location_list = []
+            price_list = []
 
 
 
-        for w in ward:
-            print(w)
-            location = df.loc[df['neighbourhood']== w]
-            result_df = location[['neighbourhood','price']]
-            avr_price = location['price'].mean()
-            index = location.index
-            number_of_rows = len(index)
+            for w in ward:
+                location = df.loc[df['neighbourhood']== w]
+                result_df = location[['neighbourhood','price']]
+                avr_price = location['price'].mean()
+                index = location.index
+                number_of_rows = len(index)
 
-            
-            count_list.append(number_of_rows)
-            price_list.append(avr_price)
-            location_list.append(w)
-
-       
-        data =  { 'listing-count': count_list, 'average-daily-rate': price_list , 'location': location_list }
-
+                
+                count_list.append(number_of_rows)
+                price_list.append(avr_price)
+                location_list.append(w)
 
         
-        outcode_df = pd.DataFrame(data, columns = ['listing-count','average-daily-rate','location'])
+            data =  { 'listing-count': count_list, 'average-daily-rate': price_list , 'location': location_list }
 
 
-        result = to_xml(outcode_df)
+            
+            outcode_df = pd.DataFrame(data, columns = ['listing-count','average-daily-rate','location'])
 
-        return Response(result)
 
+            result = to_xml(outcode_df)
 
-        # return 404 if no data
+            return Response(result)
+            
+
+        except:
+            res = {"code": 404, "message": "Data not Found!"}
+            return Response(data=json.dumps(res), status=status.HTTP_404_NOT_FOUND)
 
 
 
@@ -118,80 +122,86 @@ class NexusView(APIView):
 
     def get(self, request, post_code):
 
-        # function to load csv file
-        df = load_file_to_pandas('listings.csv')
+        try:
 
-        
-        url = 'http://api.postcodes.io/outcodes/' + post_code + '/nearest'
-        r = requests.get(url)
-        postcodes = r.json()
+            # function to load csv file
+            df = load_file_to_pandas('listings.csv')
 
-        result = postcodes['result']
+            
+            url = 'http://api.postcodes.io/outcodes/' + post_code + '/nearest'
+            r = requests.get(url)
+            postcodes = r.json()
 
-        locations = []
-        longitude = []
-        latitude = []
+            result = postcodes['result']
 
-
-        new_result = []
-        #print(result['northings'])
+            locations = []
+            longitude = []
+            latitude = []
 
 
-        for k in result:
-            del k['northings']
-            del k['eastings']
-            del k['admin_district']
-            del k['parish']
-            del k['country']
-            del k['admin_county']
-            new_result.append(k)
+            new_result = []
+            #print(result['northings'])
 
 
-        
-
-        for ward in new_result:       
-             locations.append(ward['admin_ward'])
-             longitude.append(ward['longitude'])
-             latitude.append(ward['latitude'])
-
-
-        new_df = pd.DataFrame.from_dict(new_result)
-
-
-        count_list = []
-        location_list = []
-        price_list = []
-        distance = []
+            for k in result:
+                del k['northings']
+                del k['eastings']
+                del k['admin_district']
+                del k['parish']
+                del k['country']
+                del k['admin_county']
+                new_result.append(k)
 
 
-        for l in locations:
-            for n in l:
-                location = df.loc[df['neighbourhood']== n]
-                result_df = location[['neighbourhood','price']]
-                avr_price = location['price'].mean()
-                index = location.index
-                number_of_rows = len(index)
+            
 
-                count_list.append(number_of_rows)
-                price_list.append(avr_price)
-                location_list.append(n)
+            for ward in new_result:       
+                locations.append(ward['admin_ward'])
+                longitude.append(ward['longitude'])
+                latitude.append(ward['latitude'])
 
 
-        long_list = [float(i) for i in longitude]
-        lat_list = [float(i) for i in latitude]
-
-        n = len(long_list)
-
-        for i in range(0,n):
-            r = calculate_distance(long_list[0],lat_list[0],long_list[i],lat_list[i])
-            distance.append(r)
+            new_df = pd.DataFrame.from_dict(new_result)
 
 
-        new_df['listing-count'] = pd.Series(count_list)
-        new_df['average-daily-rate'] = pd.Series(price_list)
-        new_df['distance']= pd.Series(distance)
+            count_list = []
+            location_list = []
+            price_list = []
+            distance = []
 
-        result = to_xml(new_df)
 
-        return Response(result)
+            for l in locations:
+                for n in l:
+                    location = df.loc[df['neighbourhood']== n]
+                    result_df = location[['neighbourhood','price']]
+                    avr_price = location['price'].mean()
+                    index = location.index
+                    number_of_rows = len(index)
+
+                    count_list.append(number_of_rows)
+                    price_list.append(avr_price)
+                    location_list.append(n)
+
+
+            long_list = [float(i) for i in longitude]
+            lat_list = [float(i) for i in latitude]
+
+            n = len(long_list)
+
+            for i in range(0,n):
+                r = calculate_distance(long_list[0],lat_list[0],long_list[i],lat_list[i])
+                distance.append(r)
+
+
+            new_df['listing-count'] = pd.Series(count_list)
+            new_df['average-daily-rate'] = pd.Series(price_list)
+            new_df['distance']= pd.Series(distance)
+
+            result = to_xml(new_df)
+
+            return Response(result)
+
+        except:
+            res = {"code": 404, "message": "Data not Found!"}
+            return Response(data=json.dumps(res), status=status.HTTP_404_NOT_FOUND)
 

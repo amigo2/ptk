@@ -1,9 +1,12 @@
 # PTK
 
-PTK project consists of a Dockerize django project with in mind capabilities of a future implementation from monolithic to microservices. The communication between microservices would be implemented with docker-compose
-The project itself is an API with no front end, where you can upload multiple images at once. Those files will be then saved and uploaded to a db(mysql) with a name on it that can be accessible from a link, it can be saved in at least 2 formats jpeg and png.
-Aswell you can create a User, login, logout, token capabilities from rest-auth.
-The project uses the 2 main types of test, unitest and Pytest, to validate various aspects of the application.
+PTK project consists of a Python Django Rest Framework Dockerize API with no front-end. The app grabs information mainly from 2 sources,
+api.postcodes.io to find out postcodes and nexus postcodes and from a file called 'listings.csv' to extract the desired data. The first data source is called 
+over APIand the second is loaded as Pandas as is a much faster and convenient way to manipulate big amount of data.
+The project returns the data in and XML format intead of JSON.
+If not consist data found the app will return a 404 status Data not found
+As well the project got an auth method from from Rest-auth to be able for theuser to create an account login, logout and change password as usual in the auth library.
+There are some tests for main capabilities, as login, helper function check and return 200 OK for the two main views Outcodes and Nexus.
 
 ## Installation
 
@@ -36,7 +39,9 @@ password
 Access the Application, if never acces application before go to registration
 http://0.0.0.0:8000/registration/
 If already an user
-http://0.0.0.0:8000/proimage.com/
+http://0.0.0.0:8000/api/outcode/m1/
+
+http://0.0.0.0:8000/api/nexus/m1/
 
 
 ## Usage
@@ -46,10 +51,12 @@ Use Postman as shown to upload multiple files
 
 ![image](https://user-images.githubusercontent.com/664965/114632793-b0925a00-9cbf-11eb-808c-dace36b894c2.png)
 
-Or view the photos already uploaded
-http://0.0.0.0:8000/photos/photos/
+This will show the outcodes
+http://0.0.0.0:8000/api/outcode/m1/
+
+
 Or view users
-http://0.0.0.0:8000/photos/users/
+http://0.0.0.0:8000/api/nexus/m1/
 
 As well as part of the django rest-auth you would be able to register, login, logout, generate Token,  as User.
 
