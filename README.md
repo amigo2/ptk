@@ -4,8 +4,8 @@ PTK project consists of a Python Django Rest Framework Dockerize API with no fro
 api.postcodes.io to find out postcodes and nexus postcodes and from a file called 'listings.csv' to extract the desired data. The first data source is called 
 over API and the second is loaded with Pandas as is a much faster and convenient way to manipulate big amount of data.
 The project returns the data in and XML format intead of JSON.
-If not consist data found the app will return a 404 status Data not found
-As well the project got an auth method from from Rest-auth to be able for theuser to create an account login, logout and change password as usual in the auth library.
+If not consist data found the app will return a 404 status Data not found.
+As well the project got an auth method from from Rest-auth to be able for the user to create an account login, logout and change password as usual in the auth library.
 There are some tests for main capabilities, as login, helper function check and return 200 OK for the two main views Outcodes and Nexus.
 
 ## Installation
@@ -46,12 +46,10 @@ http://0.0.0.0:8000/api/nexus/m1/
 
 ## Usage
 
-This application is for internal purposes were the user can extract information from Manchester Postcodes. The main information 
-you can extract is the amount of listings in the area and the average daily price of the area in the outcode end point,
+This application is for internal purposes where the user can extract information from Manchester Postcodes. The main information 
+you can extract is the amount of listings in the area and the average daily price of the area in the Outcode end point,
 in the Nexus endpoint user can find nearest postcodes, with same information as above plus distance from the code user introduce
 as main outcode.
-
-
 
 
 End point that shows the Outcodes
@@ -66,22 +64,12 @@ http://0.0.0.0:8000/api/nexus/m1/
 
 
 ## How to test
-Pytest been installed, to be able to test.
-```bash
-$docker exec -it <container id> Pytest
-```
-There are some test based in Unitest too 
+There are some test based in Unitest. Test check user creation and login, end-points to return 200 Ok and formuola to calculate the distamce based on longitude and latitude.
 ```bash
 $docker exec -it <container id> python manage.py test
 ```
-## Impelentation
-Not quite happy on how the urls end points are distributed, still thinking could be much clearer.
-The uploading process as mentioned before needs new thinking with more time.
-Focus on development based on messages responses.
-Adding the filter and image processing capabilities to the app.
-Update mysql to postgres
-Microservizing with docker to communicate between apps, or maybe RabbitMQ to do async?
-Pytest all application
+## Implementation
+Main implementation wouldbe in the Nexus data return as it doesn't acomplish 100% the expected structured, is quitesimilar and not that complex to implement but definitively can be implemented. As well test cases are the basics and more cases can be done to make sure no bugs are in the dev process. as far I'm concern indeed there is no bugs in the app.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
@@ -89,5 +77,5 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 Please make sure to update tests as appropriate.
 
 ## Future
-Definitively a base platform to move deeper into microservices for future projects
+Asmention above some test cases more and finishing the proper data implementation.
 
